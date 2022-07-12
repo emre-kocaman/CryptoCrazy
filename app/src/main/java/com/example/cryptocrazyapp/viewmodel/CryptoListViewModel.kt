@@ -43,7 +43,7 @@ class CryptoListViewModel @Inject constructor(private val repository: CryptoRepo
                 return@launch
             }
 
-            val results = listToSearch?.filter {
+            val results = listToSearch.filter {
                 it.currency.contains(query.trim(), ignoreCase = true)
             }
 
@@ -68,14 +68,10 @@ class CryptoListViewModel @Inject constructor(private val repository: CryptoRepo
                 is Resource.Success -> {
                     val cryptoItems = result.data?.mapIndexed { index, cryptoListItem ->
                         CryptoListItem(cryptoListItem.currency,cryptoListItem.id,cryptoListItem.logo_url,cryptoListItem.name,cryptoListItem.price,cryptoListItem.symbol)
-                        
+                    } as List<CryptoListItem>
 
-                    }
-
-                    cryptoList.value?.let {
+                    cryptoList.value.let {
                         cryptoList.value += cryptoItems
-                    } ?: run {
-                        cryptoList.value = cryptoItems
                     }
 
                     errorMessage.value = ""
@@ -88,7 +84,6 @@ class CryptoListViewModel @Inject constructor(private val repository: CryptoRepo
                 is Resource.Error -> {
                     errorMessage.value = result.message!!
                     isLoading.value = false
-                    cryptoList.value = null
                 }
             }
         }
